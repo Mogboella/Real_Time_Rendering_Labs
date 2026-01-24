@@ -21,6 +21,7 @@ compile_commands.json
 *.dll
 *.so
 *.dylib
+*.ini
 
 ########################################
 # Object files
@@ -75,7 +76,8 @@ Desktop.ini
 # External dependencies (optional)
 ########################################
 # Uncomment if vendored libs should not be tracked
-external/**
+**/external/**
+!**/external/.gitkeep
 
 
 ########################################
