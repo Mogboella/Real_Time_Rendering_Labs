@@ -1,0 +1,86 @@
+########################################
+# Build artifacts (CMake / Make / Ninja)
+########################################
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+compile_commands.json
+*.cmake
+*.ninja
+.ninja_deps
+.ninja_log
+
+########################################
+# Binaries
+########################################
+*.exe
+*.out
+*.app
+*.dll
+*.so
+*.dylib
+
+########################################
+# Object files
+########################################
+*.o
+*.obj
+*.lo
+*.la
+*.a
+*.lib
+
+########################################
+# macOS
+########################################
+.DS_Store
+.AppleDouble
+.LSOverride
+
+########################################
+# Windows
+########################################
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+########################################
+# IDE / Editor
+########################################
+.vscode/
+.idea/
+*.swp
+*.swo
+*.user
+*.log
+
+########################################
+# OpenGL assets (IGNORE REAL FILES)
+########################################
+
+# Models
+**/models/**
+!**/models/.gitkeep
+
+# Textures
+**/textures/**
+!**/textures/.gitkeep
+
+# Shaders (keep these!)
+# (do NOT ignore shaders)
+
+########################################
+# External dependencies (optional)
+########################################
+# Uncomment if vendored libs should not be tracked
+external/**
+
+
+########################################
+# Cache / temp
+########################################
+*.tmp
+*.bak
+*.cache
