@@ -11,6 +11,7 @@ compile_commands.json
 *.ninja
 .ninja_deps
 .ninja_log
+imgui.ini
 
 ########################################
 # Binaries
@@ -21,7 +22,7 @@ compile_commands.json
 *.dll
 *.so
 *.dylib
-*.ini
+
 
 ########################################
 # Object files
@@ -76,8 +77,8 @@ Desktop.ini
 # External dependencies (optional)
 ########################################
 # Uncomment if vendored libs should not be tracked
-**/external/**
-!**/external/.gitkeep
+# **/external/**
+# !**/external/.gitkeep
 
 
 ########################################
