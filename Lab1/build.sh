@@ -7,7 +7,7 @@
 rm -rf build
 
 # Create fresh build directory and configure
-mkdir build && cd build
+mkdir build && cd build || return 1
 cmake .. -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_OSX_SYSROOT="$(xcrun --show-sdk-path)"
 make -j
