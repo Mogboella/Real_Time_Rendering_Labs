@@ -21,6 +21,7 @@ using namespace std;
 
 int width = 1920, height = 1080;
 bool showUI = true;
+const char *project_name = "Lab 1 - Reflectance Models";
 
 // camera at +Z looking toward origin (-Z)
 Camera camera(0.0f, 3.0f, 12.0f, 0.0f, 1.0f, 0.0f, -90.0f, -10.0f);
@@ -128,7 +129,7 @@ int main() {
 #endif
 
   GLFWwindow *window =
-      glfwCreateWindow(width, height, "Desert Colony", nullptr, nullptr);
+      glfwCreateWindow(width, height, project_name, nullptr, nullptr);
 
   if (!window) {
     cerr << "Failed to create window\n";

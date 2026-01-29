@@ -104,12 +104,27 @@ public:
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 
     int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(false);
     for (GLuint i = 0; i < 6; i++) {
       unsigned char *data =
           stbi_load(faces[i], &width, &height, &nrChannels, 0);
       if (data) {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width,
-                     height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        GLenum format = GL_RGB;
+        GLenum internalFormat = GL_RGB;
+
+        if (nrChannels == 4) {
+          format = GL_RGBA;
+          internalFormat = GL_RGBA; // simplest fix (no sRGB yet)
+        } else if (nrChannels == 3) {
+          format = GL_RGB;
+          internalFormat = GL_RGB;
+        } else if (nrChannels == 1) {
+          format = GL_RED;
+          internalFormat = GL_RED;
+        }
+
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat,
+                     width, height, 0, format, GL_UNSIGNED_BYTE, data);
         stbi_image_free(data);
       } else {
         std::cout << "Cubemap texture failed to load at path: " << faces[i]

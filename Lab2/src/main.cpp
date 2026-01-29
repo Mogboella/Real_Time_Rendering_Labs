@@ -21,6 +21,7 @@ using namespace std;
 
 int width = 1920, height = 1080;
 bool showUI = true;
+const char *project_name = "Lab 2 - Transmitance Effects";
 
 // camera at +Z looking toward origin (-Z)
 Camera camera(0.0f, 3.0f, 12.0f, 0.0f, 1.0f, 0.0f, -90.0f, -10.0f);
@@ -29,9 +30,9 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 // -- skybox faces ---
-const char *faces[6] = {"assets/skybox/right.png", "assets/skybox/left.png",
-                        "assets/skybox/top.png",   "assets/skybox/bottom.png",
-                        "assets/skybox/front.png", "assets/skybox/back.png"};
+const char *faces[6] = {"assets/skybox/right.jpg", "assets/skybox/left.jpg",
+                        "assets/skybox/top.jpg",   "assets/skybox/bottom.jpg",
+                        "assets/skybox/front.jpg", "assets/skybox/back.jpg"};
 
 // --- globals for input ---
 Camera *gCamera = nullptr;
@@ -133,7 +134,7 @@ int main() {
 #endif
 
   GLFWwindow *window =
-      glfwCreateWindow(width, height, "Desert Colony", nullptr, nullptr);
+      glfwCreateWindow(width, height, project_name, nullptr, nullptr);
 
   if (!window) {
     cerr << "Failed to create window\n";
@@ -172,43 +173,33 @@ int main() {
 
   // Load shaders
   Shader shader("assets/shaders/main.vert", "assets/shaders/main.frag");
-  shader.cubeMapTexture = shader.loadCubemap(faces);
+  Shader skyboxShader("assets/shaders/skybox.vert",
+                      "assets/shaders/skybox.frag");
+  unsigned int cubemapTexture = skyboxShader.loadCubemap(faces);
 
   // Load Model
-  // Model model("path/to/model")
+  Model ball("assets/models/ball/source/ball_lp_uw.obj");
 
-  //==================================
-  // Setup a simple triangle
-  // Can Replace with Model Loader Later
+  // setup skybox
+  float skyboxVertices[] = {
+      // positions (36 vertices)
+      -1, 1,  -1, -1, -1, -1, 1,  -1, -1, 1,  -1, -1, 1,  1,  -1, -1, 1,  -1,
+      -1, -1, 1,  -1, -1, -1, -1, 1,  -1, -1, 1,  -1, -1, 1,  1,  -1, -1, 1,
+      1,  -1, -1, 1,  -1, 1,  1,  1,  1,  1,  1,  1,  1,  1,  -1, 1,  -1, -1,
+      -1, -1, 1,  -1, 1,  1,  1,  1,  1,  1,  1,  1,  1,  -1, 1,  -1, -1, 1,
+      -1, 1,  -1, 1,  1,  -1, 1,  1,  1,  1,  1,  1,  -1, 1,  1,  -1, 1,  -1,
+      -1, -1, -1, -1, -1, 1,  1,  -1, -1, 1,  -1, -1, -1, -1, 1,  1,  -1, 1};
 
-  float vertices[] = {
-      // positions         // colors
-      -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left - red
-      0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom right - green
-      0.0f,  0.5f,  0.0f, 0.0f, 0.0f, 1.0f  // top - blue
-  };
-
-  unsigned int VBO, VAO;
-  glGenVertexArrays(1, &VAO);
-  glGenBuffers(1, &VBO);
-
-  glBindVertexArray(VAO);
-
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-  // Position attribute
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
+  unsigned int skyboxVAO, skyboxVBO;
+  glGenVertexArrays(1, &skyboxVAO);
+  glGenBuffers(1, &skyboxVBO);
+  glBindVertexArray(skyboxVAO);
+  glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), skyboxVertices,
+               GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
-
-  // Color attribute
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
-                        (void *)(3 * sizeof(float)));
-  glEnableVertexAttribArray(1);
-
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
   glBindVertexArray(0);
-  //==================================
 
   // Render loop
   while (!glfwWindowShouldClose(window)) {
@@ -246,18 +237,29 @@ int main() {
 
     // Use shader and set uniforms
     shader.use();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, shader.cubeMapTexture);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glDepthMask(GL_TRUE);
-    shader.setInt("skybox", 0);
     shader.setMat4("projection", projection);
     shader.setMat4("view", view);
     shader.setMat4("model", model);
 
-    // Draw triangle
-    glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    ball.Draw(shader);
+
+    glDepthFunc(GL_LEQUAL);
+    glDepthMask(GL_FALSE);
+
+    skyboxShader.use();
+    skyboxShader.setMat4("projection", projection);
+    skyboxShader.setMat4("view", view);
+    skyboxShader.setInt("skybox", 0);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+
+    glBindVertexArray(skyboxVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
+
+    glDepthMask(GL_TRUE);
+    glDepthFunc(GL_LESS);
 
     if (showUI) {
       ImGui::Render();
@@ -268,11 +270,6 @@ int main() {
   }
 
   // Cleanup
-  //==================================
-  glDeleteVertexArrays(1, &VAO);
-  glDeleteBuffers(1, &VBO);
-  //==================================
-
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();
