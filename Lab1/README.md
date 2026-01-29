@@ -37,6 +37,8 @@ The project is configured for macOS (using Homebrew paths), but can be adapted f
 
 ## Building and Running
 
+> Note : You have to download the model you wish to use to the model/ folder
+
 ### macOS/Linux
 
 1. Build the project:
