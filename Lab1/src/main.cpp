@@ -36,10 +36,16 @@ float gLastX = 0.0f;
 float gLastY = 0.0f;
 bool gFirstMouse = true;
 
+float spacing = 4.0f; // spacing between models
+
 glm::vec3 lightPos(50.0f, 50.0f, 50.0f);
 glm::vec3 lightColor(1.0f);
 float lightIntensity = 1.0f;
 float orenRoughness = 0.5f;
+float toonBands = 4.0f;
+float toonMinShade = 0.1f;
+float phongShininess = 32.0f;
+float phongSpecularStrength = 0.5f;
 
 glm::vec3 globalObjectColor(1.0f);
 
@@ -76,6 +82,8 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
   if (!gCamera)
+    return;
+  if (ImGui::GetIO().WantCaptureMouse)
     return;
   gCamera->ProcessMouseScroll((float)yoffset);
 }
@@ -208,6 +216,7 @@ int main() {
 
     // ----- MODELS -----
     ImGui::Checkbox("Link Model Colors", &linkModelColors);
+    ImGui::SliderFloat("Model Spacing", &spacing, 1.0f, 20.0f);
 
     if (linkModelColors) {
       ImGui::ColorEdit3("Model Color", &globalObjectColor.x);
@@ -222,6 +231,19 @@ int main() {
     // ----- OREN–NAYAR -----
     ImGui::SliderFloat("Oren Roughness", &orenRoughness, 0.0f, 1.0f);
 
+    ImGui::Separator();
+
+    // ----- TOON -----
+    ImGui::SliderFloat("Toon Bands", &toonBands, 1.0f, 10.0f);
+    ImGui::SliderFloat("Toon Min Shade", &toonMinShade, 0.0f, 1.0f);
+    ImGui::Separator();
+
+    // ----- PHONG -----
+    ImGui::SliderFloat("Phong Shininess", &phongShininess, 1.0f, 256.0f);
+    ImGui::SliderFloat("Phong Specular Strength", &phongSpecularStrength, 0.0f,
+                       1.0f);
+    ImGui::Separator();
+
     ImGui::End();
 
     // Set transformations
@@ -231,7 +253,7 @@ int main() {
     float angle = glfwGetTime();
 
     // Put three copies along X
-    float spacing = 4.0f; // spacing for teapot = 15.0f
+    // spacing for teapot = 15.0f
     glm::vec3 positions[3] = {glm::vec3(-spacing, 0.0f, 0.0f),
                               glm::vec3(0.0f, 0.0f, 0.0f),
                               glm::vec3(spacing, 0.0f, 0.0f)};
@@ -251,6 +273,16 @@ int main() {
       shaders[i]->setVec3("lightColor", lightColor * lightIntensity);
       shaders[i]->setVec3("objectColor", colorToUse);
       shaders[i]->setVec3("viewPos", camera.position);
+
+      if (shaders[i] == &toonShader) {
+        shaders[i]->setFloat("bands", toonBands);
+        shaders[i]->setFloat("minShade", toonMinShade);
+      }
+
+      if (shaders[i] == &phongShader) {
+        shaders[i]->setFloat("shininess", phongShininess);
+        shaders[i]->setFloat("ks", phongSpecularStrength);
+      }
 
       if (shaders[i] == &orenNayer) {
         shaders[i]->setFloat("roughness", orenRoughness);

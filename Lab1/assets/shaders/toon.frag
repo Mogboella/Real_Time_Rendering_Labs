@@ -3,7 +3,6 @@
 in vec3 FragPos;
 in vec3 Normal;
 
-
 out vec4 color;
 
 uniform vec3 lightPos;
@@ -11,6 +10,8 @@ uniform vec3 viewPos;
 uniform vec3 lightColor;
 uniform vec3 objectColor;
 
+uniform float bands; // Number of toon shading bands
+uniform float minShade; // Minimum shade factor
 
 void main()
 {
@@ -18,20 +19,14 @@ void main()
     vec3 lightDir = normalize(lightPos - FragPos);
     vec3 viewDir = normalize(viewPos - FragPos);
 
-    float intensity = dot(lightDir, normal);
-    intensity = max(intensity, 0.0);
+    float intensity = max(dot(lightDir, normal), 0.0);
 
-    vec3 pixelColor;
+    float b = max(bands, 1.0);
+    float q = floor(intensity * b) / b;
+    float shade = mix(minShade, 1.0, q);
 
-    if (intensity > 0.95)
-        pixelColor = lightColor * objectColor;
-    else if (intensity > 0.5)
-        pixelColor = lightColor * objectColor * 0.7;
-    else if (intensity > 0.25)
-        pixelColor = lightColor * objectColor * 0.4;
-    else
-        pixelColor = lightColor * objectColor * 0.1;
-    
+    vec3 pixelColor = lightColor * objectColor * shade;
     color = vec4(pixelColor, 1.0);
+
 }
 

@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "imgui.h"
+#include "imgui_style.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
@@ -31,7 +32,7 @@ float lastFrame = 0.0f;
 
 // -- skybox faces ---
 const char *faces[6] = {"assets/skybox/right.jpg", "assets/skybox/left.jpg",
-                        "assets/skybox/top.jpg",   "assets/skybox/bottom.jpg",
+                        "assets/skybox/top.jpg", "assets/skybox/bottom.jpg",
                         "assets/skybox/front.jpg", "assets/skybox/back.jpg"};
 
 // --- globals for input ---
@@ -52,11 +53,13 @@ glm::vec3 modelColors[3] = {
 
 bool linkModelColors = true;
 
-void framebuffer_size_callback(GLFWwindow *window, int w, int h) {
+void framebuffer_size_callback(GLFWwindow *window, int w, int h)
+{
   glViewport(0, 0, w, h);
 }
 
-void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
+void mouse_callback(GLFWwindow *window, double xpos, double ypos)
+{
 
   if (showUI)
     return;
@@ -64,7 +67,8 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
   if (!gCamera)
     return;
 
-  if (gFirstMouse) {
+  if (gFirstMouse)
+  {
     gLastX = (float)xpos;
     gLastY = (float)ypos;
     gFirstMouse = false;
@@ -78,18 +82,21 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
   gCamera->ProcessMouseMovement(xoffset, yoffset);
 }
 
-void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
+{
   if (!gCamera)
     return;
   gCamera->ProcessMouseScroll((float)yoffset);
 }
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action,
-                  int mods) {
+                  int mods)
+{
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
 
-  if (key == GLFW_KEY_TAB && action == GLFW_PRESS) {
+  if (key == GLFW_KEY_TAB && action == GLFW_PRESS)
+  {
     showUI = !showUI;
     glfwSetInputMode(window, GLFW_CURSOR,
                      showUI ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
@@ -98,7 +105,8 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action,
   }
 }
 
-void processInput(GLFWwindow *window) {
+void processInput(GLFWwindow *window)
+{
 
   if (showUI)
     return;
@@ -120,7 +128,8 @@ void processInput(GLFWwindow *window) {
     gCamera->ProcessKeyboard(DOWN, deltaTime);
 }
 
-int main() {
+int main()
+{
 
   if (!glfwInit())
     return -1;
@@ -136,7 +145,8 @@ int main() {
   GLFWwindow *window =
       glfwCreateWindow(width, height, project_name, nullptr, nullptr);
 
-  if (!window) {
+  if (!window)
+  {
     cerr << "Failed to create window\n";
     glfwTerminate();
     return -1;
@@ -150,7 +160,8 @@ int main() {
 
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+  {
     cerr << "Failed to initialize GLAD\n";
     return -1;
   }
@@ -158,6 +169,7 @@ int main() {
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGui::StyleColorsDark();
+  ApplyCustomStyle();
 
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init("#version 330 core");
@@ -183,12 +195,12 @@ int main() {
   // setup skybox
   float skyboxVertices[] = {
       // positions (36 vertices)
-      -1, 1,  -1, -1, -1, -1, 1,  -1, -1, 1,  -1, -1, 1,  1,  -1, -1, 1,  -1,
-      -1, -1, 1,  -1, -1, -1, -1, 1,  -1, -1, 1,  -1, -1, 1,  1,  -1, -1, 1,
-      1,  -1, -1, 1,  -1, 1,  1,  1,  1,  1,  1,  1,  1,  1,  -1, 1,  -1, -1,
-      -1, -1, 1,  -1, 1,  1,  1,  1,  1,  1,  1,  1,  1,  -1, 1,  -1, -1, 1,
-      -1, 1,  -1, 1,  1,  -1, 1,  1,  1,  1,  1,  1,  -1, 1,  1,  -1, 1,  -1,
-      -1, -1, -1, -1, -1, 1,  1,  -1, -1, 1,  -1, -1, -1, -1, 1,  1,  -1, 1};
+      -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1,
+      -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1,
+      1, -1, -1, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, 1, -1, -1,
+      -1, -1, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, 1, -1, -1, 1,
+      -1, 1, -1, 1, 1, -1, 1, 1, 1, 1, 1, 1, -1, 1, 1, -1, 1, -1,
+      -1, -1, -1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, -1, 1, 1, -1, 1};
 
   unsigned int skyboxVAO, skyboxVBO;
   glGenVertexArrays(1, &skyboxVAO);
@@ -202,7 +214,8 @@ int main() {
   glBindVertexArray(0);
 
   // Render loop
-  while (!glfwWindowShouldClose(window)) {
+  while (!glfwWindowShouldClose(window))
+  {
     float currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
@@ -218,7 +231,8 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // ImGui UI
-    if (showUI) {
+    if (showUI)
+    {
       ImGui::Begin("Scene Controls");
       ImGui::Text("OpenGL Starter Template");
       ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
@@ -261,7 +275,8 @@ int main() {
     glDepthMask(GL_TRUE);
     glDepthFunc(GL_LESS);
 
-    if (showUI) {
+    if (showUI)
+    {
       ImGui::Render();
       ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
