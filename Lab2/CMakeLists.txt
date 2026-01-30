@@ -22,7 +22,7 @@ add_executable(lab2
 )
 
 target_include_directories(lab2 PRIVATE 
-  ${CMAKE_SOURCE_DIR}/include 
+  ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/external/glad/include
   ${CMAKE_SOURCE_DIR}/external/imgui
 )
