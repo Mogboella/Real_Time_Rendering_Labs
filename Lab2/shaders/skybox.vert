@@ -9,8 +9,9 @@ uniform mat4 view;
 void main()
 {
     textureDir = aPos;
-    gl_Position = projection * view * vec4(aPos, 1.0);
-
+    vec4 pos = projection * view * vec4(aPos, 1.0);
+    gl_Position = pos.xyww;
+   
     // mat4 viewNoTranslate = mat4(mat3(view));
     // vec4 pos = projection * viewNoTranslate * vec4(aPos, 1.0);
 
